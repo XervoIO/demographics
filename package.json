@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "main": "demographics.js",
   "scripts": {
+    "start": "node demographics",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Fran Varney <fran@modulus.io>",
