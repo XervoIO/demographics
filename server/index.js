@@ -3,6 +3,7 @@ import Waterline from 'waterline'
 
 import Config from '../config'
 import DbConnectionConfig from './connections'
+import LoadCollections from './helpers/load-collections'
 import Routes from './routes'
 
 let orm = new Waterline()
@@ -20,9 +21,12 @@ server.start(err => {
 
   console.log('demographics is running at...', server.info.uri)
 
+  LoadCollections(orm)
   orm.initialize(DbConnectionConfig, (err, models) => {
     if (err) throw err
+
     console.log('ORM initialized.')
+    server.models = models.collections
   })
 })
 
