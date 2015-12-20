@@ -6,5 +6,6 @@ export default [
 
   // Projects
   { method: 'POST', path: '/projects', config: Project.create },
+  { method: 'GET', path: '/projects/{name}', config: Project.get },
   { method: 'GET', path: '/projects', config: Project.getAll }
 ]
