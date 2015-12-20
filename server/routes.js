@@ -5,5 +5,6 @@ export default [
   { method: 'GET', path: '/ping', handler: Ping },
 
   // Projects
-  { method: 'POST', path: '/projects', config: Project.create }
+  { method: 'POST', path: '/projects', config: Project.create },
+  { method: 'GET', path: '/projects', config: Project.getAll }
 ]

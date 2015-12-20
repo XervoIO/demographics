@@ -22,6 +22,18 @@ let create = {
   }
 }
 
+let getAll = {
+  handler: (request, reply) => {
+    const Project = request.server.models.project
+
+    Project.find().exec((err, foundProject) => {
+      if (err) return reply(Boom.badRequest(err))
+      reply(foundProject)
+    })
+  }
+}
+
 export default {
-  create: create
+  create: create,
+  getAll: getAll
 }
