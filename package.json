@@ -12,6 +12,7 @@
     "babel-preset-es2015": "6.3.13",
     "babel-register": "6.3.13",
     "hapi": "11.x",
+    "joi": "7.x",
     "knock-knock": "0.1.0",
     "sails-mongo": "0.11.5",
     "waterline": "0.10.28"
