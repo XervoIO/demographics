@@ -12,5 +12,6 @@ export default [
   { method: 'GET', path: '/projects', config: Project.getAll },
 
   // Versions
-  { method: 'POST', path: '/projects/{name}/versions', config: Version.create }
+  { method: 'POST', path: '/projects/{name}/versions', config: Version.create },
+  { method: 'GET', path: '/versions', config: Version.getAll }
 ]

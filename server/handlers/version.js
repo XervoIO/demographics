@@ -9,7 +9,17 @@ let create = {
     payload: {
       version: Joi.string().required(),
       loc: Joi.number().integer().min(0),
-      coverage: Joi.number().min(0)
+      coverage: Joi.number().min(0),
+      dependencies: {
+        major: Joi.number().min(0),
+        minor: Joi.number().min(0),
+        upToDate: Joi.number().min(0)
+      },
+      devDependencies: {
+        major: Joi.number().min(0),
+        minor: Joi.number().min(0),
+        upToDate: Joi.number().min(0)
+      }
     }
   },
   handler: (request, reply) => {
@@ -54,6 +64,18 @@ let create = {
   }
 }
 
+let getAll = {
+  handler: (request, reply) => {
+    const {versions} = request.server.models
+
+    versions.find().exec((err, foundVersions) => {
+      if (err) return reply(Boom.badRequest(err))
+      reply(foundVersions)
+    })
+  }
+}
+
 export default {
-  create: create
+  create: create,
+  getAll: getAll
 }
