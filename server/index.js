@@ -1,6 +1,7 @@
 import {Server} from 'hapi'
 
 import Config from '../config'
+import Routes from './routes'
 
 let server = new Server()
 
@@ -8,6 +9,8 @@ server.connection({
   host: Config.host,
   port: parseInt(Config.port)
 })
+
+server.route(Routes)
 
 server.start(err => {
   if (err) throw err
