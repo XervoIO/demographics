@@ -64,6 +64,23 @@ let create = {
   }
 }
 
+let get = {
+  validate: {
+    params: {
+      name: Joi.string().required()
+    }
+  },
+  handler: (request, reply) => {
+    const {versions} = request.server.models
+
+    versions.find({ projectName: request.params.name }).exec((err, foundVersions) => {
+      if (err) return reply(Boom.badRequest(err))
+      if (foundVersions.length === 0) return reply(Boom.notFound('No versions entered.'))
+      reply(foundVersions)
+    })
+  }
+}
+
 let getAll = {
   handler: (request, reply) => {
     const {versions} = request.server.models
@@ -77,5 +94,6 @@ let getAll = {
 
 export default {
   create: create,
+  get: get,
   getAll: getAll
 }
