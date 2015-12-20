@@ -12,6 +12,7 @@
     "babel-preset-es2015": "6.3.13",
     "babel-register": "6.3.13",
     "hapi": "11.x",
-    "knock-knock": "0.1.0"
+    "knock-knock": "0.1.0",
+    "waterline": "0.10.28"
   }
 }
