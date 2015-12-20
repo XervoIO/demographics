@@ -6,6 +6,7 @@ export default [
 
   // Projects
   { method: 'POST', path: '/projects', config: Project.create },
+  { method: 'DELETE', path: '/projects/{name}', config: Project.delete },
   { method: 'GET', path: '/projects/{name}', config: Project.get },
   { method: 'GET', path: '/projects', config: Project.getAll }
 ]

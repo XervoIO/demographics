@@ -8,16 +8,33 @@ let create = {
     }
   },
   handler: (request, reply) => {
-    const Project = request.server.models.project
+    const {project} = request.server.models
 
-    Project.find({ name: request.payload.name }).exec((err, foundProject) => {
+    project.find({ name: request.payload.name }).exec((err, foundProject) => {
       if (err) return reply(Boom.badRequest(err))
       if (foundProject.length > 0) return reply(Boom.badRequest('A project by that name already exists.'))
 
-      Project.create({ name: request.payload.name}).exec((err, newProject) => {
+      project.create({ name: request.payload.name}).exec((err, newProject) => {
         if (err) return reply(Boom.badRequest(err))
         reply(newProject)
       })
+    })
+  }
+}
+
+let del = {
+  validate: {
+    params: {
+      name: Joi.string().required()
+    }
+  },
+  handler: (request, reply) => {
+    const {project} = request.server.models
+
+    project.destroy({ name: request.params.name }).exec((err, foundProject) => {
+      if (err) return reply(Boom.badRequest(err))
+      if (foundProject.length === 0) return reply(Boom.notFound('Project not found.'))
+      reply()
     })
   }
 }
@@ -29,9 +46,9 @@ let get = {
     }
   },
   handler: (request, reply) => {
-    const Project = request.server.models.project
+    const {project} = request.server.models
 
-    Project.find({ name: request.params.name }).exec((err, foundProject) => {
+    project.find({ name: request.params.name }).exec((err, foundProject) => {
       if (err) return reply(Boom.badRequest(err))
       if (foundProject.length === 0) return reply(Boom.notFound('Project not found.'))
       reply(foundProject)
@@ -41,9 +58,9 @@ let get = {
 
 let getAll = {
   handler: (request, reply) => {
-    const Project = request.server.models.project
+    const {project} = request.server.models
 
-    Project.find().exec((err, foundProject) => {
+    project.find().exec((err, foundProject) => {
       if (err) return reply(Boom.badRequest(err))
       reply(foundProject)
     })
@@ -52,6 +69,7 @@ let getAll = {
 
 export default {
   create: create,
+  delete: del,
   get: get,
   getAll: getAll
 }
