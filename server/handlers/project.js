@@ -1,4 +1,4 @@
-import Boom from 'boom'
+import {badRequest, notFound} from 'boom'
 import Joi from 'joi'
 
 let create = {
@@ -15,8 +15,8 @@ let create = {
     const {projects} = request.server.models
 
     projects.find({ name: request.payload.name }).exec((err, foundProject) => {
-      if (err) return reply(Boom.badRequest(err))
-      if (foundProject.length > 0) return reply(Boom.badRequest('A project by that name already exists.'))
+      if (err) return reply(badRequest(err))
+      if (foundProject.length > 0) return reply(badRequest('A project by that name already exists.'))
 
       let toCreate = {
         name: request.payload.name,
@@ -27,7 +27,7 @@ let create = {
       }
 
       projects.create(toCreate).exec((err, newProject) => {
-        if (err) return reply(Boom.badRequest(err))
+        if (err) return reply(badRequest(err))
         reply(newProject)
       })
     })
@@ -44,8 +44,8 @@ let del = {
     const {projects} = request.server.models
 
     projects.destroy({ name: request.params.name }).exec((err, foundProject) => {
-      if (err) return reply(Boom.badRequest(err))
-      if (foundProject.length === 0) return reply(Boom.notFound('Project not found.'))
+      if (err) return reply(badRequest(err))
+      if (foundProject.length === 0) return reply(notFound('Project not found.'))
       reply()
     })
   }
@@ -61,8 +61,8 @@ let getOne = {
     const {projects} = request.server.models
 
     projects.findOne({ name: request.params.name }).exec((err, foundProject) => {
-      if (err) return reply(Boom.badRequest(err))
-      if (!foundProject) return reply(Boom.notFound('Project not found.'))
+      if (err) return reply(badRequest(err))
+      if (!foundProject) return reply(notFound('Project not found.'))
       reply(foundProject)
     })
   }
@@ -73,7 +73,7 @@ let getAll = {
     const {projects} = request.server.models
 
     projects.find().exec((err, foundProject) => {
-      if (err) return reply(Boom.badRequest(err))
+      if (err) return reply(badRequest(err))
       reply(foundProject)
     })
   }
@@ -98,8 +98,8 @@ let update = {
     projects.update({
       name: request.params.name
     }, request.payload).exec((err, updatedProject) => {
-      if (err) return reply(Boom.badRequest(err))
-      if (updatedProject.length === 0) return reply(Boom.notFound('Project not found.'))
+      if (err) return reply(badRequest(err))
+      if (updatedProject.length === 0) return reply(notFound('Project not found.'))
       reply(updatedProject)
     })
   }

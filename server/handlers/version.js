@@ -1,4 +1,4 @@
-import Boom from 'boom'
+import {badRequest, notFound} from 'boom'
 import Joi from 'joi'
 
 let create = {
@@ -26,16 +26,16 @@ let create = {
     const {projects, versions} = request.server.models
 
     projects.find({ name: request.params.name }).exec((err, foundProject) => {
-      if (err) return reply(Boom.badRequest(err))
-      if (foundProject.length < 1) return reply(Boom.badRequest('Project not found.'))
+      if (err) return reply(badRequest(err))
+      if (foundProject.length < 1) return reply(badRequest('Project not found.'))
 
       versions.find({
         projectName: request.params.name,
         version: request.payload.version
       }).exec((err, foundProjectVersion) => {
-        if (err) return reply(Boom.badRequest(err))
+        if (err) return reply(badRequest(err))
         if (foundProjectVersion && foundProjectVersion.version === request.payload.version)
-          return reply(Boom.badRequest('Details for that versions have been entered.'))
+          return reply(badRequest('Details for that versions have been entered.'))
 
         let {coverage, dependencies, devDependencies, loc, version} = request.payload
         let toCreate = {
@@ -56,7 +56,7 @@ let create = {
         }
 
         versions.create(toCreate).exec((err, newProjectVersion) => {
-          if (err) return reply(Boom.badRequest(err))
+          if (err) return reply(badRequest(err))
           reply(newProjectVersion)
         })
       })
@@ -78,8 +78,8 @@ let del = {
       projectName: request.params.name,
       version: request.params.version
     }).exec((err, foundProject) => {
-      if (err) return reply(Boom.badRequest(err))
-      if (foundProject.length === 0) return reply(Boom.notFound('Version not found.'))
+      if (err) return reply(badRequest(err))
+      if (foundProject.length === 0) return reply(notFound('Version not found.'))
       reply()
     })
   }
@@ -95,8 +95,8 @@ let get = {
     const {versions} = request.server.models
 
     versions.find({ projectName: request.params.name }).exec((err, foundVersions) => {
-      if (err) return reply(Boom.badRequest(err))
-      if (foundVersions.length === 0) return reply(Boom.notFound('No versions entered.'))
+      if (err) return reply(badRequest(err))
+      if (foundVersions.length === 0) return reply(notFound('No versions entered.'))
       reply(foundVersions)
     })
   }
@@ -107,7 +107,7 @@ let getAll = {
     const {versions} = request.server.models
 
     versions.find().exec((err, foundVersions) => {
-      if (err) return reply(Boom.badRequest(err))
+      if (err) return reply(badRequest(err))
       reply(foundVersions)
     })
   }
@@ -127,8 +127,8 @@ let getOne = {
       projectName: request.params.name,
       version: request.params.version
     }).exec((err, foundVersion) => {
-      if (err) return reply(Boom.badRequest(err))
-      if (!foundVersion) return reply(Boom.notFound('Version not found.'))
+      if (err) return reply(badRequest(err))
+      if (!foundVersion) return reply(notFound('Version not found.'))
       reply(foundVersion)
     })
   }
@@ -163,8 +163,8 @@ let update = {
       projectName: request.params.name,
       version: request.params.version
     }, request.payload).exec((err, updatedVersion) => {
-      if (err) return reply(Boom.badRequest(err))
-      if (updatedVersion.length === 0) return reply(Boom.notFound('Version not found.'))
+      if (err) return reply(badRequest(err))
+      if (updatedVersion.length === 0) return reply(notFound('Version not found.'))
       reply(updatedVersion)
     })
   }
