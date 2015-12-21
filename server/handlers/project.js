@@ -6,6 +6,7 @@ let create = {
     payload: {
       name: Joi.string().required(),
       maintainers: Joi.array(),
+      description: Joi.string(),
       hasLinter: Joi.boolean(),
       hasReadme: Joi.boolean()
     }
@@ -20,6 +21,7 @@ let create = {
       let toCreate = {
         name: request.payload.name,
         maintainers: request.payload.maintainers || [],
+        description: request.payload.description || '',
         hasLinter: request.payload.hasLinter || false,
         hasReadme: request.payload.hasReadme || false
       }

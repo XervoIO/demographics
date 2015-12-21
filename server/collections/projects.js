@@ -8,6 +8,7 @@ export default Waterline.Collection.extend({
   attributes: {
     name: { type: 'string', required: true, index: true },
     maintainers: { type: 'array' },
+    description: { type: 'string' },
     hasLinter: { type: 'boolean' },
     hasReadme: { type: 'boolean' },
   }
