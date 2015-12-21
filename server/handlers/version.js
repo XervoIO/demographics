@@ -7,18 +7,18 @@ let create = {
       name: Joi.string().required()
     },
     payload: {
-      version: Joi.string().required(),
+      version: Joi.string(),
       loc: Joi.number().integer().min(0),
       coverage: Joi.number().min(0),
       dependencies: {
-        major: Joi.number().min(0),
-        minor: Joi.number().min(0),
-        upToDate: Joi.number().min(0)
+        major: Joi.number().integer().min(0),
+        minor: Joi.number().integer().min(0),
+        upToDate: Joi.number().integer().min(0)
       },
       devDependencies: {
-        major: Joi.number().min(0),
-        minor: Joi.number().min(0),
-        upToDate: Joi.number().min(0)
+        major: Joi.number().integer().min(0),
+        minor: Joi.number().integer().min(0),
+        upToDate: Joi.number().integer().min(0)
       }
     }
   },
@@ -113,9 +113,45 @@ let getAll = {
   }
 }
 
+let update = {
+  validate: {
+    params: {
+      name: Joi.string().required(),
+      version: Joi.string().required()
+    },
+    payload: {
+      version: Joi.string(),
+      loc: Joi.number().integer().min(0),
+      coverage: Joi.number().min(0),
+      dependencies: {
+        major: Joi.number().integer().min(0),
+        minor: Joi.number().integer().min(0),
+        upToDate: Joi.number().integer().min(0)
+      },
+      devDependencies: {
+        major: Joi.number().integer().min(0),
+        minor: Joi.number().integer().min(0),
+        upToDate: Joi.number().integer().min(0)
+      }
+    }
+  },
+  handler: (request, reply) => {
+    const {versions} = request.server.models
+
+    versions.update({
+      projectName: request.params.name,
+      version: request.params.version
+    }, request.payload).exec((err, updatedVersion) => {
+      if (err) return reply(Boom.badRequest(err))
+      reply(updatedVersion)
+    })
+  }
+}
+
 export default {
   create: create,
   delete: del,
   get: get,
-  getAll: getAll
+  getAll: getAll,
+  update: update
 }
