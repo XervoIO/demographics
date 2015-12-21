@@ -79,7 +79,7 @@ let del = {
       version: request.params.version
     }).exec((err, foundProject) => {
       if (err) return reply(Boom.badRequest(err))
-      if (foundProject.length === 0) return reply(Boom.notFound('Project version not found.'))
+      if (foundProject.length === 0) return reply(Boom.notFound('Version not found.'))
       reply()
     })
   }
