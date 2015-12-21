@@ -17,6 +17,7 @@ export default [
   { method: 'DELETE', path: '/projects/{name}/versions/{version}', config: Version.delete },
   { method: 'GET', path: '/projects/{name}/versions', config: Version.get },
   { method: 'GET', path: '/versions', config: Version.getAll },
+  { method: 'GET', path: '/projects/versions', config: Version.getAll },
   { method: 'GET', path: '/projects/{name}/versions/{version}', config: Version.getOne },
   { method: 'PUT', path: '/projects/{name}/versions/{version}', config: Version.update }
 ]
