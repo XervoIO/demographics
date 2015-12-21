@@ -10,6 +10,7 @@ export default [
   { method: 'DELETE', path: '/projects/{name}', config: Project.delete },
   { method: 'GET', path: '/projects/{name}', config: Project.getOne },
   { method: 'GET', path: '/projects', config: Project.getAll },
+  { method: 'PUT', path: '/projects/{name}', config: Project.update },
 
   // Versions
   { method: 'POST', path: '/projects/{name}/versions', config: Version.create },

@@ -79,9 +79,36 @@ let getAll = {
   }
 }
 
+let update = {
+  validate: {
+    params: {
+      name: Joi.string().required()
+    },
+    payload: {
+      name: Joi.string(),
+      maintainers: Joi.array(),
+      description: Joi.string(),
+      hasLinter: Joi.boolean(),
+      hasReadme: Joi.boolean()
+    }
+  },
+  handler: (request, reply) => {
+    const {projects} = request.server.models
+
+    projects.update({
+      name: request.params.name
+    }, request.payload).exec((err, updatedProject) => {
+      if (err) return reply(Boom.badRequest(err))
+      if (updatedProject.length === 0) return reply(Boom.notFound('Project not found.'))
+      reply(updatedProject)
+    })
+  }
+}
+
 export default {
   create: create,
   delete: del,
   getOne: getOne,
-  getAll: getAll
+  getAll: getAll,
+  update: update
 }
