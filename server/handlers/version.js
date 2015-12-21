@@ -113,6 +113,27 @@ let getAll = {
   }
 }
 
+let getOne = {
+  validate: {
+    params: {
+      name: Joi.string().required(),
+      version: Joi.string().required()
+    }
+  },
+  handler: (request, reply) => {
+    const {versions} = request.server.models
+
+    versions.findOne({
+      projectName: request.params.name,
+      version: request.params.version
+    }).exec((err, foundVersion) => {
+      if (err) return reply(Boom.badRequest(err))
+      if (!foundVersion) return reply(Boom.notFound('Version not found.'))
+      reply(foundVersion)
+    })
+  }
+}
+
 let update = {
   validate: {
     params: {
@@ -153,5 +174,6 @@ export default {
   delete: del,
   get: get,
   getAll: getAll,
+  getOne: getOne,
   update: update
 }
