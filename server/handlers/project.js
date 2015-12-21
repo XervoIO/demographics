@@ -49,7 +49,7 @@ let del = {
   }
 }
 
-let get = {
+let getOne = {
   validate: {
     params: {
       name: Joi.string().required()
@@ -58,9 +58,9 @@ let get = {
   handler: (request, reply) => {
     const {projects} = request.server.models
 
-    projects.find({ name: request.params.name }).exec((err, foundProject) => {
+    projects.findOne({ name: request.params.name }).exec((err, foundProject) => {
       if (err) return reply(Boom.badRequest(err))
-      if (foundProject.length === 0) return reply(Boom.notFound('Project not found.'))
+      if (!foundProject) return reply(Boom.notFound('Project not found.'))
       reply(foundProject)
     })
   }
@@ -80,6 +80,6 @@ let getAll = {
 export default {
   create: create,
   delete: del,
-  get: get,
+  getOne: getOne,
   getAll: getAll
 }
