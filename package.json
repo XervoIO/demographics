@@ -1,6 +1,7 @@
 {
   "name": "demographics",
   "version": "0.0.0",
+  "description": "A project stats API",
   "main": "demographics.js",
   "scripts": {
     "start": "node demographics",
@@ -8,6 +9,14 @@
   },
   "author": "Fran Varney <fran@modulus.io>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/onmodulus/demographics.git"
+  },
+  "bugs": {
+    "url": "https://github.com/onmodulus/demographics/issues"
+  },
+  "homepage": "https://github.com/onmodulus/demographics#readme",
   "dependencies": {
     "babel-preset-es2015": "6.3.13",
     "babel-register": "6.3.13",
