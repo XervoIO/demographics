@@ -164,6 +164,7 @@ let update = {
       version: request.params.version
     }, request.payload).exec((err, updatedVersion) => {
       if (err) return reply(Boom.badRequest(err))
+      if (updatedVersion.length === 0) return reply(Boom.notFound('Version not found.'))
       reply(updatedVersion)
     })
   }
