@@ -64,6 +64,27 @@ let create = {
   }
 }
 
+let del = {
+  validate: {
+    params: {
+      name: Joi.string().required(),
+      version: Joi.string().required()
+    }
+  },
+  handler: (request, reply) => {
+    const {versions} = request.server.models
+
+    versions.destroy({
+      projectName: request.params.name,
+      version: request.params.version
+    }).exec((err, foundProject) => {
+      if (err) return reply(Boom.badRequest(err))
+      if (foundProject.length === 0) return reply(Boom.notFound('Project version not found.'))
+      reply()
+    })
+  }
+}
+
 let get = {
   validate: {
     params: {
@@ -94,6 +115,7 @@ let getAll = {
 
 export default {
   create: create,
+  delete: del,
   get: get,
   getAll: getAll
 }

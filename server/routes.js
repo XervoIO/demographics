@@ -13,6 +13,7 @@ export default [
 
   // Versions
   { method: 'POST', path: '/projects/{name}/versions', config: Version.create },
+  { method: 'DELETE', path: '/projects/{name}/versions/{version}', config: Version.delete },
   { method: 'GET', path: '/projects/{name}/versions', config: Version.get },
   { method: 'GET', path: '/versions', config: Version.getAll }
 ]
