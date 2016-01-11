@@ -1,5 +1,8 @@
 import {badRequest, notFound} from 'boom'
 import Joi from 'joi'
+import Logger from '@modulus/logger'
+
+let logger = Logger('server/handlers/version')
 
 import Project from '../models/project'
 import Version from '../models/version'
@@ -27,16 +30,29 @@ let create = {
   },
   handler: (request, reply) => {
     Project.find({ name: request.params.name }, (err, foundProject) => {
-      if (err) return reply(badRequest(err))
-      if (foundProject.length < 1) return reply(badRequest('Project not found.'))
+      if (err) {
+        logger.error(`projects.find ${err.message}`)
+        return reply(badRequest(err))
+      }
+
+      if (foundProject.length < 1) {
+        logger.error(`projects.find Project ${request.payload.name} not found`)
+        return reply(badRequest('Project not found.'))
+      }
 
       Version.find({
         name: request.params.name,
         version: request.payload.version
       }, (err, foundProjectVersion) => {
-        if (err) return reply(badRequest(err))
-        if (foundProjectVersion && foundProjectVersion.version === request.payload.version)
+        if (err) {
+          logger.error(`versions.find ${err.message}`)
+          return reply(badRequest(err))
+        }
+
+        if (foundProjectVersion && foundProjectVersion.version === request.payload.version) {
+          logger.error('versions.find Details for that versions have been entered')
           return reply(badRequest('Details for that versions have been entered.'))
+        }
 
         let {coverage, dependencies, devDependencies, loc, version} = request.payload
         let toCreate = {
@@ -57,12 +73,19 @@ let create = {
         }
 
         new Version(toCreate).save((err, newProjectVersion) => {
-          if (err) return reply(badRequest(err))
+          if (err) {
+            logger.error(`versions.create ${err.message}`)
+            return reply(badRequest(err))
+          }
 
           Project.update(
             { name: newProjectVersion.name },
             { $push: { versions: newProjectVersion._id } }, (err) => {
-              if (err) return reply(badRequest(err))
+              if (err) {
+                logger.error(`project.update ${err.message}`)
+                return reply(badRequest(err))
+              }
+
               reply(newProjectVersion)
             })
         })
@@ -83,8 +106,16 @@ let del = {
       name: request.params.name,
       version: request.params.version
     }, (err, foundProject) => {
-      if (err) return reply(badRequest(err))
-      if (foundProject.length === 0) return reply(notFound('Version not found.'))
+      if (err) {
+        logger.error(`versions.destroy ${err.message}`)
+        return reply(badRequest(err))
+      }
+
+      if (foundProject.length === 0) {
+        logger.error('versions.destroy Version not found')
+        return reply(notFound('Version not found.'))
+      }
+
       reply()
     })
   }
@@ -98,8 +129,16 @@ let get = {
   },
   handler: (request, reply) => {
     Version.find({ name: request.params.name }, (err, foundVersions) => {
-      if (err) return reply(badRequest(err))
-      if (foundVersions.length === 0) return reply(notFound('No versions entered.'))
+      if (err) {
+        logger.error(`versions.findOne ${err.message}`)
+        return reply(badRequest(err))
+      }
+
+      if (foundProject.length < 1) {
+        logger.error(`versions.findOne No versions entered`)
+        return reply(notFound('No versions entered.'))
+      }
+
       reply(foundVersions)
     })
   }
@@ -108,7 +147,11 @@ let get = {
 let getAll = {
   handler: (request, reply) => {
     Version.find({}, (err, foundVersions) => {
-      if (err) return reply(badRequest(err))
+      if (err) {
+        logger.error(`versions.find ${err.message}`)
+        return reply(badRequest(err))
+      }
+
       reply(foundVersions)
     })
   }
@@ -126,8 +169,16 @@ let getOne = {
       name: request.params.name,
       version: request.params.version
     }, (err, foundVersion) => {
-      if (err) return reply(badRequest(err))
-      if (!foundVersion) return reply(notFound('Version not found.'))
+      if (err) {
+        logger.error(`versions.findOne ${err.message}`)
+        return reply(badRequest(err))
+      }
+
+      if (!foundVersion) {
+        logger.error(`versions.findOne Version not found`)
+        return reply(notFound('Version not found.'))
+      }
+
       reply(foundVersion)
     })
   }
@@ -160,8 +211,16 @@ let update = {
       name: request.params.name,
       version: request.params.version
     }, request.payload, (err, updatedVersion) => {
-      if (err) return reply(badRequest(err))
-      if (updatedVersion.length === 0) return reply(notFound('Version not found.'))
+      if (err) {
+        logger.error(`versions.update ${err.message}`)
+        return reply(badRequest(err))
+      }
+
+      if (updatedVersion.length === 0) {
+        logger.error('versions.update error: Version not found')
+        return reply(notFound('Version not found.'))
+      }
+
       reply(updatedVersion)
     })
   }
