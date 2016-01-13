@@ -1,6 +1,8 @@
 import {badRequest, notFound} from 'boom'
 import Joi from 'joi'
 
+import Project from '../models/project'
+
 let create = {
   validate: {
     payload: {
@@ -12,9 +14,7 @@ let create = {
     }
   },
   handler: (request, reply) => {
-    const {projects} = request.server.models
-
-    projects.find({ name: request.payload.name }).exec((err, foundProject) => {
+    Project.find({ name: request.payload.name }, (err, foundProject) => {
       if (err) return reply(badRequest(err))
       if (foundProject.length > 0) return reply(badRequest('A project by that name already exists.'))
 
@@ -26,7 +26,7 @@ let create = {
         hasReadme: request.payload.hasReadme || false
       }
 
-      projects.create(toCreate).exec((err, newProject) => {
+      new Project(toCreate).save((err, newProject) => {
         if (err) return reply(badRequest(err))
         reply(newProject)
       })
@@ -41,9 +41,7 @@ let del = {
     }
   },
   handler: (request, reply) => {
-    const {projects} = request.server.models
-
-    projects.destroy({ name: request.params.name }).exec((err, foundProject) => {
+    Project.remove({ name: request.params.name }, (err, foundProject) => {
       if (err) return reply(badRequest(err))
       if (foundProject.length === 0) return reply(notFound('Project not found.'))
       reply()
@@ -58,9 +56,7 @@ let getOne = {
     }
   },
   handler: (request, reply) => {
-    const {projects} = request.server.models
-
-    projects.findOne({ name: request.params.name }).exec((err, foundProject) => {
+    Project.findOne({ name: request.params.name }, (err, foundProject) => {
       if (err) return reply(badRequest(err))
       if (!foundProject) return reply(notFound('Project not found.'))
       reply(foundProject)
@@ -70,9 +66,7 @@ let getOne = {
 
 let getAll = {
   handler: (request, reply) => {
-    const {projects} = request.server.models
-
-    projects.find().exec((err, foundProject) => {
+    Project.find({}, (err, foundProject) => {
       if (err) return reply(badRequest(err))
       reply(foundProject)
     })
@@ -93,11 +87,9 @@ let update = {
     }
   },
   handler: (request, reply) => {
-    const {projects} = request.server.models
-
-    projects.update({
+    Project.update({
       name: request.params.name
-    }, request.payload).exec((err, updatedProject) => {
+    }, request.payload, (err, updatedProject) => {
       if (err) return reply(badRequest(err))
       if (updatedProject.length === 0) return reply(notFound('Project not found.'))
       reply(updatedProject)
