@@ -1,13 +1,15 @@
 import {Server} from 'hapi'
-import Waterline from 'waterline'
+import Mongoose from 'mongoose'
 
 import Config from '../config'
-import DbConnectionConfig from './connections'
-import LoadCollections from './helpers/load-collections'
 import Routes from './routes'
 
-let orm = new Waterline()
 let server = new Server()
+
+Mongoose.connect(Config.mongo.url, (err) => {
+  if (err) throw err
+  console.log(`Connected to ${Config.mongo.url}`)
+})
 
 server.connection({
   host: Config.host,
@@ -20,14 +22,6 @@ server.start(err => {
   if (err) throw err
 
   console.log('demographics is running at...', server.info.uri)
-
-  LoadCollections(orm)
-  orm.initialize(DbConnectionConfig, (err, models) => {
-    if (err) throw err
-
-    console.log('ORM initialized.')
-    server.models = models.collections
-  })
 })
 
 export default server
