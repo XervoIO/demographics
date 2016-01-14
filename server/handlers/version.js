@@ -58,7 +58,13 @@ let create = {
 
         new Version(toCreate).save((err, newProjectVersion) => {
           if (err) return reply(badRequest(err))
-          reply(newProjectVersion)
+
+          Project.update(
+            { name: newProjectVersion.name },
+            { $push: { versions: newProjectVersion._id } }, (err) => {
+              if (err) return reply(badRequest(err))
+              reply(newProjectVersion)
+            })
         })
       })
     })
