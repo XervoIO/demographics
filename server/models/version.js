@@ -9,12 +9,12 @@ let Version = new Schema({
   dependencies: {
     major: { type: Number },
     minor: { type: Number },
-    uptoDate: { type: Number }
+    upToDate: { type: Number }
   },
   devDependencies: {
     major: { type: Number },
     minor: { type: Number },
-    uptoDate: { type: Number }
+    upToDate: { type: Number }
   }
 })
 
