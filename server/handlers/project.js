@@ -56,7 +56,11 @@ let getOne = {
     }
   },
   handler: (request, reply) => {
-    Project.findOne({ name: request.params.name }, (err, foundProject) => {
+    Project.findOne({
+      name: request.params.name
+    })
+    .populate('versions')
+    .exec((err, foundProject) => {
       if (err) return reply(badRequest(err))
       if (!foundProject) return reply(notFound('Project not found.'))
       reply(foundProject)
@@ -66,7 +70,7 @@ let getOne = {
 
 let getAll = {
   handler: (request, reply) => {
-    Project.find({}, (err, foundProject) => {
+    Project.find({}).populate('versions').exec((err, foundProject) => {
       if (err) return reply(badRequest(err))
       reply(foundProject)
     })
