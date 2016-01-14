@@ -1,4 +1,5 @@
 import Mongoose, {Schema} from 'mongoose'
+import Timestamps from 'mongoose-timestamp'
 
 let Project = new Schema({
   name: { type: String, required: true, index: true },
@@ -7,5 +8,7 @@ let Project = new Schema({
   hasLinter: { type: Boolean, default: false },
   hasReadme: { type: Boolean, default: false }
 })
+
+Project.plugin(Timestamps)
 
 export default Mongoose.model('Project', Project)

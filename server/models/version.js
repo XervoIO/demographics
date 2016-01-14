@@ -1,4 +1,5 @@
 import Mongoose, {Schema} from 'mongoose'
+import Timestamps from 'mongoose-timestamp'
 
 let Version = new Schema({
   name: { type: String, required: true, index: true },
@@ -16,5 +17,7 @@ let Version = new Schema({
     uptoDate: { type: Number }
   }
 })
+
+Version.plugin(Timestamps)
 
 export default Mongoose.model('Version', Version)
