@@ -6,7 +6,8 @@ let Project = new Schema({
   maintainers: { type: Array, default: [] },
   description: { type: String },
   hasLinter: { type: Boolean, default: false },
-  hasReadme: { type: Boolean, default: false }
+  hasReadme: { type: Boolean, default: false },
+  versions: [{ type: Schema.Types.ObjectId, ref: 'Version' }]
 })
 
 Project.plugin(Timestamps)
