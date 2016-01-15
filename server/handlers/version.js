@@ -1,6 +1,9 @@
 import {badRequest, notFound} from 'boom'
 import Joi from 'joi'
 
+import Project from '../models/project'
+import Version from '../models/version'
+
 let create = {
   validate: {
     params: {
@@ -23,23 +26,21 @@ let create = {
     }
   },
   handler: (request, reply) => {
-    const {projects, versions} = request.server.models
-
-    projects.find({ name: request.params.name }).exec((err, foundProject) => {
+    Project.find({ name: request.params.name }, (err, foundProject) => {
       if (err) return reply(badRequest(err))
       if (foundProject.length < 1) return reply(badRequest('Project not found.'))
 
-      versions.find({
-        projectName: request.params.name,
+      Version.find({
+        name: request.params.name,
         version: request.payload.version
-      }).exec((err, foundProjectVersion) => {
+      }, (err, foundProjectVersion) => {
         if (err) return reply(badRequest(err))
         if (foundProjectVersion && foundProjectVersion.version === request.payload.version)
           return reply(badRequest('Details for that versions have been entered.'))
 
         let {coverage, dependencies, devDependencies, loc, version} = request.payload
         let toCreate = {
-          projectName: request.params.name,
+          name: request.params.name,
           version: version,
           loc: loc,
           coverage: coverage || 0,
@@ -55,9 +56,15 @@ let create = {
           }
         }
 
-        versions.create(toCreate).exec((err, newProjectVersion) => {
+        new Version(toCreate).save((err, newProjectVersion) => {
           if (err) return reply(badRequest(err))
-          reply(newProjectVersion)
+
+          Project.update(
+            { name: newProjectVersion.name },
+            { $push: { versions: newProjectVersion._id } }, (err) => {
+              if (err) return reply(badRequest(err))
+              reply(newProjectVersion)
+            })
         })
       })
     })
@@ -72,12 +79,10 @@ let del = {
     }
   },
   handler: (request, reply) => {
-    const {versions} = request.server.models
-
-    versions.destroy({
-      projectName: request.params.name,
+    Version.remove({
+      name: request.params.name,
       version: request.params.version
-    }).exec((err, foundProject) => {
+    }, (err, foundProject) => {
       if (err) return reply(badRequest(err))
       if (foundProject.length === 0) return reply(notFound('Version not found.'))
       reply()
@@ -92,9 +97,7 @@ let get = {
     }
   },
   handler: (request, reply) => {
-    const {versions} = request.server.models
-
-    versions.find({ projectName: request.params.name }).exec((err, foundVersions) => {
+    Version.find({ name: request.params.name }, (err, foundVersions) => {
       if (err) return reply(badRequest(err))
       if (foundVersions.length === 0) return reply(notFound('No versions entered.'))
       reply(foundVersions)
@@ -104,9 +107,7 @@ let get = {
 
 let getAll = {
   handler: (request, reply) => {
-    const {versions} = request.server.models
-
-    versions.find().exec((err, foundVersions) => {
+    Version.find({}, (err, foundVersions) => {
       if (err) return reply(badRequest(err))
       reply(foundVersions)
     })
@@ -121,12 +122,10 @@ let getOne = {
     }
   },
   handler: (request, reply) => {
-    const {versions} = request.server.models
-
-    versions.findOne({
-      projectName: request.params.name,
+    Version.findOne({
+      name: request.params.name,
       version: request.params.version
-    }).exec((err, foundVersion) => {
+    }, (err, foundVersion) => {
       if (err) return reply(badRequest(err))
       if (!foundVersion) return reply(notFound('Version not found.'))
       reply(foundVersion)
@@ -157,12 +156,10 @@ let update = {
     }
   },
   handler: (request, reply) => {
-    const {versions} = request.server.models
-
-    versions.update({
-      projectName: request.params.name,
+    Version.update({
+      name: request.params.name,
       version: request.params.version
-    }, request.payload).exec((err, updatedVersion) => {
+    }, request.payload, (err, updatedVersion) => {
       if (err) return reply(badRequest(err))
       if (updatedVersion.length === 0) return reply(notFound('Version not found.'))
       reply(updatedVersion)
