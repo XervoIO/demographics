@@ -1,4 +1,6 @@
 require('babel-register')
 require('./server')
 
-console.log('demographics starting...')
+const Logger = require('@modulus/logger')('demographics')
+
+Logger.info(`demographics starting...`)

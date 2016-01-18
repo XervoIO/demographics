@@ -1,9 +1,11 @@
 import {Server} from 'hapi'
 import Mongoose from 'mongoose'
+import Logger from '@modulus/logger'
 
 import Config from '../config'
 import Routes from './routes'
 
+let logger = Logger('server')
 let server = new Server()
 
 Mongoose.connect(Config.mongo.url, (err) => {
@@ -20,9 +22,12 @@ server.connection({
 server.route(Routes)
 
 server.start(err => {
-  if (err) throw err
+  if (err) {
+    logger.error(`server.start ${err.message}`)
+    return err
+  }
 
-  console.log('demographics is running at...', server.info.uri)
+  logger.info(`demographics is running at ${server.info.uri}`)
 })
 
 export default server
