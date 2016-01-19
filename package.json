@@ -4,6 +4,7 @@
   "description": "A project stats API",
   "main": "demographics.js",
   "scripts": {
+    "lint": "mod-standard",
     "start": "node demographics",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
