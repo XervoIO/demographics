@@ -17,6 +17,9 @@
     "url": "https://github.com/onmodulus/demographics/issues"
   },
   "homepage": "https://github.com/onmodulus/demographics#readme",
+  "engines": {
+    "node": "4.2"
+  },
   "dependencies": {
     "@modulus/logger": "1.1.0",
     "boom": "3.x",
