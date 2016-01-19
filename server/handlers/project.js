@@ -1,12 +1,12 @@
-import {badRequest, notFound} from 'boom'
-import Joi from 'joi'
-import Logger from '@modulus/logger'
+'use strict'
 
-let logger = Logger('server/handlers/project')
+const Boom = require('boom')
+const Joi = require('joi')
+const Logger = require('@modulus/Logger')('server/handlers/project')
 
-import Project from '../models/project'
+const Project = require('../models/project')
 
-let create = {
+exports.create = {
   validate: {
     payload: {
       name: Joi.string().required(),
@@ -19,13 +19,13 @@ let create = {
   handler: (request, reply) => {
     Project.find({ name: request.payload.name }, (err, foundProject) => {
       if (err) {
-        logger.error(`projects.find ${err.message}`)
-        return reply(badRequest(err))
+        Logger.error(`projects.find ${err.message}`)
+        return reply(Boom.badRequest(err))
       }
 
       if (foundProject.length > 0) {
-        logger.error(`projects.find Project ${request.payload.name} already exists`)
-        return reply(badRequest('A project by that name already exists.'))
+        Logger.error(`projects.find Project ${request.payload.name} already exists`)
+        return reply(Boom.badRequest('A project by that name already exists.'))
       }
 
       let toCreate = {
@@ -38,8 +38,8 @@ let create = {
 
       new Project(toCreate).save((err, newProject) => {
         if (err) {
-          logger.error(`projects.create ${err.message}`)
-          return reply(badRequest(err))
+          Logger.error(`projects.create ${err.message}`)
+          return reply(Boom.badRequest(err))
         }
 
         reply(newProject)
@@ -48,7 +48,7 @@ let create = {
   }
 }
 
-let del = {
+exports.delete = {
   validate: {
     params: {
       name: Joi.string().required()
@@ -57,13 +57,13 @@ let del = {
   handler: (request, reply) => {
     Project.remove({ name: request.params.name }, (err, foundProject) => {
       if (err) {
-        logger.error(`projects.destroy ${err.message}`)
-        return reply(badRequest(err))
+        Logger.error(`projects.destroy ${err.message}`)
+        return reply(Boom.badRequest(err))
       }
 
       if (foundProject.length === 0) {
-        logger.error('projects.destroy Project not found')
-        return reply(notFound('Project not found.'))
+        Logger.error('projects.destroy Project not found')
+        return reply(Boom.notFound('Project not found.'))
       }
 
       reply()
@@ -71,7 +71,7 @@ let del = {
   }
 }
 
-let getOne = {
+exports.getOne = {
   validate: {
     params: {
       name: Joi.string().required()
@@ -84,13 +84,13 @@ let getOne = {
     .populate('versions')
     .exec((err, foundProject) => {
       if (err) {
-        logger.error(`projects.findOne ${err.message}`)
-        return reply(badRequest(err))
+        Logger.error(`projects.findOne ${err.message}`)
+        return reply(Boom.badRequest(err))
       }
 
       if (!foundProject) {
-        logger.error(`projects.findOne Project ${request.payload.name} not found`)
-        return reply(badRequest('Project not found.'))
+        Logger.error(`projects.findOne Project ${request.payload.name} not found`)
+        return reply(Boom.badRequest('Project not found.'))
       }
 
       reply(foundProject)
@@ -98,12 +98,12 @@ let getOne = {
   }
 }
 
-let getAll = {
+exports.getAll = {
   handler: (request, reply) => {
     Project.find({}).populate('versions').exec((err, foundProject) => {
       if (err) {
-        logger.error(`projects.find ${err.message}`)
-        return reply(badRequest(err))
+        Logger.error(`projects.find ${err.message}`)
+        return reply(Boom.badRequest(err))
       }
 
       reply(foundProject)
@@ -111,7 +111,7 @@ let getAll = {
   }
 }
 
-let update = {
+exports.update = {
   validate: {
     params: {
       name: Joi.string().required()
@@ -129,24 +129,16 @@ let update = {
       name: request.params.name
     }, request.payload, (err, updatedProject) => {
       if (err) {
-        logger.error(`projects.findOne ${err.message}`)
-        return reply(badRequest(err))
+        Logger.error(`projects.findOne ${err.message}`)
+        return reply(Boom.badRequest(err))
       }
 
       if (updatedProject.length < 1) {
-        logger.error(`projects.find Project ${request.payload.name} not found`)
-        return reply(badRequest('Project not found.'))
+        Logger.error(`projects.find Project ${request.payload.name} not found`)
+        return reply(Boom.badRequest('Project not found.'))
       }
 
       reply(updatedProject)
     })
   }
-}
-
-export default {
-  create: create,
-  delete: del,
-  getOne: getOne,
-  getAll: getAll,
-  update: update
 }

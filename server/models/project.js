@@ -1,15 +1,17 @@
-import Mongoose, {Schema} from 'mongoose'
-import Timestamps from 'mongoose-timestamp'
+'use strict'
 
-let Project = new Schema({
+const Mongoose = require('mongoose')
+const Timestamps = require('mongoose-timestamp')
+
+let Project = new Mongoose.Schema({
   name: { type: String, required: true, index: true },
   maintainers: { type: Array, default: [] },
   description: { type: String },
   hasLinter: { type: Boolean, default: false },
   hasReadme: { type: Boolean, default: false },
-  versions: [{ type: Schema.Types.ObjectId, ref: 'Version' }]
+  versions: [{ type: Mongoose.Schema.Types.ObjectId, ref: 'Version' }]
 })
 
 Project.plugin(Timestamps)
 
-export default Mongoose.model('Project', Project)
+module.exports = Mongoose.model('Project', Project)

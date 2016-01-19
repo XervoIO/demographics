@@ -1,16 +1,17 @@
-import {Server} from 'hapi'
-import Mongoose from 'mongoose'
-import Logger from '@modulus/logger'
+'use strict'
 
-import Config from '../config'
-import Routes from './routes'
+const Hapi = require('hapi')
+const Mongoose = require('mongoose')
+const Logger = require('@modulus/Logger')('server')
 
-let logger = Logger('server')
-let server = new Server()
+const Config = require('../config')
+const Routes = require('./routes')
+
+let server = new Hapi.Server()
 
 Mongoose.connect(Config.mongo.url, (err) => {
   if (err) throw err
-  console.log(`Connected to ${Config.mongo.url}`)
+  Logger.info(`Connected to ${Config.mongo.url}`)
 })
 
 server.connection({
@@ -21,13 +22,13 @@ server.connection({
 
 server.route(Routes)
 
-server.start(err => {
+server.start((err) => {
   if (err) {
-    logger.error(`server.start ${err.message}`)
+    Logger.error(`server.start ${err.message}`)
     return err
   }
 
-  logger.info(`demographics is running at ${server.info.uri}`)
+  Logger.info(`demographics is running at ${server.info.uri}`)
 })
 
-export default server
+module.exports = server
