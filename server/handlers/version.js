@@ -1,13 +1,13 @@
-import {badRequest, notFound} from 'boom'
-import Joi from 'joi'
-import Logger from '@modulus/logger'
+'use strict'
 
-let logger = Logger('server/handlers/version')
+const Boom = require('boom')
+const Joi = require('joi')
+const Logger = require('@modulus/Logger')('server/handlers/version')
 
-import Project from '../models/project'
-import Version from '../models/version'
+const Project = require('../models/project')
+const Version = require('../models/version')
 
-let create = {
+exports.create = {
   validate: {
     params: {
       name: Joi.string().required()
@@ -31,13 +31,13 @@ let create = {
   handler: (request, reply) => {
     Project.find({ name: request.params.name }, (err, foundProject) => {
       if (err) {
-        logger.error(`projects.find ${err.message}`)
-        return reply(badRequest(err))
+        Logger.error(`projects.find ${err.message}`)
+        return reply(Boom.badRequest(err))
       }
 
       if (foundProject.length < 1) {
-        logger.error(`projects.find Project ${request.payload.name} not found`)
-        return reply(badRequest('Project not found.'))
+        Logger.error(`projects.find Project ${request.payload.name} not found`)
+        return reply(Boom.badRequest('Project not found.'))
       }
 
       Version.find({
@@ -45,45 +45,45 @@ let create = {
         version: request.payload.version
       }, (err, foundProjectVersion) => {
         if (err) {
-          logger.error(`versions.find ${err.message}`)
-          return reply(badRequest(err))
+          Logger.error(`versions.find ${err.message}`)
+          return reply(Boom.badRequest(err))
         }
 
         if (foundProjectVersion && foundProjectVersion.version === request.payload.version) {
-          logger.error('versions.find Details for that versions have been entered')
-          return reply(badRequest('Details for that versions have been entered.'))
+          Logger.error('versions.find Details for that versions have been entered')
+          return reply(Boom.badRequest('Details for that versions have been entered.'))
         }
 
-        let {coverage, dependencies, devDependencies, loc, version} = request.payload
+        let payload = request.payload
         let toCreate = {
           name: request.params.name,
-          version: version,
-          loc: loc,
-          coverage: coverage || 0,
+          version: payload.version,
+          loc: payload.loc,
+          coverage: payload.coverage || 0,
           dependencies: {
-            major: dependencies ? dependencies.major : 0,
-            minor: dependencies ? dependencies.minor : 0,
-            upToDate: dependencies ? dependencies.upToDate : 0
+            major: payload.dependencies ? payload.dependencies.major : 0,
+            minor: payload.dependencies ? payload.dependencies.minor : 0,
+            upToDate: payload.dependencies ? payload.dependencies.upToDate : 0
           },
           devDependencies: {
-            major: devDependencies ? devDependencies.major : 0,
-            minor: devDependencies ? devDependencies.minor : 0,
-            upToDate: devDependencies ? devDependencies.upToDate : 0
+            major: payload.evDependencies ? payload.devDependencies.major : 0,
+            minor: payload.devDependencies ? payload.devDependencies.minor : 0,
+            upToDate: payload.devDependencies ? payload.devDependencies.upToDate : 0
           }
         }
 
         new Version(toCreate).save((err, newProjectVersion) => {
           if (err) {
-            logger.error(`versions.create ${err.message}`)
-            return reply(badRequest(err))
+            Logger.error(`versions.create ${err.message}`)
+            return reply(Boom.badRequest(err))
           }
 
           Project.update(
             { name: newProjectVersion.name },
             { $push: { versions: newProjectVersion._id } }, (err) => {
               if (err) {
-                logger.error(`project.update ${err.message}`)
-                return reply(badRequest(err))
+                Logger.error(`project.update ${err.message}`)
+                return reply(Boom.badRequest(err))
               }
 
               reply(newProjectVersion)
@@ -94,7 +94,7 @@ let create = {
   }
 }
 
-let del = {
+exports.delete = {
   validate: {
     params: {
       name: Joi.string().required(),
@@ -107,13 +107,13 @@ let del = {
       version: request.params.version
     }, (err, foundProject) => {
       if (err) {
-        logger.error(`versions.destroy ${err.message}`)
-        return reply(badRequest(err))
+        Logger.error(`versions.destroy ${err.message}`)
+        return reply(Boom.badRequest(err))
       }
 
       if (foundProject.length === 0) {
-        logger.error('versions.destroy Version not found')
-        return reply(notFound('Version not found.'))
+        Logger.error('versions.destroy Version not found')
+        return reply(Boom.notFound('Version not found.'))
       }
 
       reply()
@@ -121,7 +121,7 @@ let del = {
   }
 }
 
-let get = {
+exports.get = {
   validate: {
     params: {
       name: Joi.string().required()
@@ -130,13 +130,13 @@ let get = {
   handler: (request, reply) => {
     Version.find({ name: request.params.name }, (err, foundVersions) => {
       if (err) {
-        logger.error(`versions.findOne ${err.message}`)
-        return reply(badRequest(err))
+        Logger.error(`versions.findOne ${err.message}`)
+        return reply(Boom.badRequest(err))
       }
 
       if (foundProject.length < 1) {
-        logger.error(`versions.findOne No versions entered`)
-        return reply(notFound('No versions entered.'))
+        Logger.error(`versions.findOne No versions entered`)
+        return reply(Boom.notFound('No versions entered.'))
       }
 
       reply(foundVersions)
@@ -144,12 +144,12 @@ let get = {
   }
 }
 
-let getAll = {
+exports.getAll = {
   handler: (request, reply) => {
     Version.find({}, (err, foundVersions) => {
       if (err) {
-        logger.error(`versions.find ${err.message}`)
-        return reply(badRequest(err))
+        Logger.error(`versions.find ${err.message}`)
+        return reply(Boom.badRequest(err))
       }
 
       reply(foundVersions)
@@ -157,7 +157,7 @@ let getAll = {
   }
 }
 
-let getOne = {
+exports.getOne = {
   validate: {
     params: {
       name: Joi.string().required(),
@@ -170,13 +170,13 @@ let getOne = {
       version: request.params.version
     }, (err, foundVersion) => {
       if (err) {
-        logger.error(`versions.findOne ${err.message}`)
-        return reply(badRequest(err))
+        Logger.error(`versions.findOne ${err.message}`)
+        return reply(Boom.badRequest(err))
       }
 
       if (!foundVersion) {
-        logger.error(`versions.findOne Version not found`)
-        return reply(notFound('Version not found.'))
+        Logger.error(`versions.findOne Version not found`)
+        return reply(Boom.notFound('Version not found.'))
       }
 
       reply(foundVersion)
@@ -184,7 +184,7 @@ let getOne = {
   }
 }
 
-let update = {
+exports.update = {
   validate: {
     params: {
       name: Joi.string().required(),
@@ -212,25 +212,16 @@ let update = {
       version: request.params.version
     }, request.payload, (err, updatedVersion) => {
       if (err) {
-        logger.error(`versions.update ${err.message}`)
-        return reply(badRequest(err))
+        Logger.error(`versions.update ${err.message}`)
+        return reply(Boom.badRequest(err))
       }
 
       if (updatedVersion.length === 0) {
-        logger.error('versions.update error: Version not found')
-        return reply(notFound('Version not found.'))
+        Logger.error('versions.update error: Version not found')
+        return reply(Boom.notFound('Version not found.'))
       }
 
       reply(updatedVersion)
     })
   }
-}
-
-export default {
-  create: create,
-  delete: del,
-  get: get,
-  getAll: getAll,
-  getOne: getOne,
-  update: update
 }

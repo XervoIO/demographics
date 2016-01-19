@@ -1,7 +1,7 @@
-import Project from './projects'
-import Versions from './versions'
+const Project = require('./projects')
+const Versions = require('./versions')
 
-export default [
+module.exports = [
   Project,
   Versions
 ]

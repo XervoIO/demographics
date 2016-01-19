@@ -1,7 +1,9 @@
-import Mongoose, {Schema} from 'mongoose'
-import Timestamps from 'mongoose-timestamp'
+'use strict'
 
-let Version = new Schema({
+const Mongoose = require('mongoose')
+const Timestamps = require('mongoose-timestamp')
+
+let Version = new Mongoose.Schema({
   name: { type: String, required: true, index: true },
   version: { type: String, required: true, index: true },
   loc: { type: Number, required: true },
@@ -20,4 +22,4 @@ let Version = new Schema({
 
 Version.plugin(Timestamps)
 
-export default Mongoose.model('Version', Version)
+module.exports = Mongoose.model('Version', Version)

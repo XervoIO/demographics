@@ -1,8 +1,8 @@
-import Ping from './handlers/ping'
-import Project from './handlers/project'
-import Version from './handlers/version'
+const Ping = require('./handlers/ping')
+const Project = require('./handlers/project')
+const Version = require('./handlers/version')
 
-export default [
+module.exports = [
   { method: 'GET', path: '/ping', handler: Ping },
 
   // Projects
