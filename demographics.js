@@ -1,5 +1,5 @@
-require('./server')
+require('./server');
 
-const Logger = require('@modulus/logger')('demographics')
+const Logger = require('@modulus/logger')('demographics');
 
-Logger.info(`demographics starting...`)
+Logger.info(`demographics starting...`);

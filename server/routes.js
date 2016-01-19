@@ -1,6 +1,6 @@
-const Ping = require('./handlers/ping')
-const Project = require('./handlers/project')
-const Version = require('./handlers/version')
+const Ping = require('./handlers/ping');
+const Project = require('./handlers/project');
+const Version = require('./handlers/version');
 
 module.exports = [
   { method: 'GET', path: '/ping', handler: Ping },
@@ -20,4 +20,4 @@ module.exports = [
   { method: 'GET', path: '/projects/versions', config: Version.getAll },
   { method: 'GET', path: '/projects/{name}/versions/{version}', config: Version.getOne },
   { method: 'PUT', path: '/projects/{name}/versions/{version}', config: Version.update }
-]
+];

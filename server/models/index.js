@@ -1,7 +1,7 @@
-const Project = require('./projects')
-const Versions = require('./versions')
+const Project = require('./projects');
+const Versions = require('./versions');
 
 module.exports = [
   Project,
   Versions
-]
+];

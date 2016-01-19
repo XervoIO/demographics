@@ -1,11 +1,11 @@
-'use strict'
+'use strict';
 
-const Boom = require('boom')
-const Joi = require('joi')
-const Logger = require('@modulus/Logger')('server/handlers/version')
+const Boom = require('boom');
+const Joi = require('joi');
+const Logger = require('@modulus/Logger')('server/handlers/version');
 
-const Project = require('../models/project')
-const Version = require('../models/version')
+const Project = require('../models/project');
+const Version = require('../models/version');
 
 exports.create = {
   validate: {
@@ -31,13 +31,13 @@ exports.create = {
   handler: (request, reply) => {
     Project.find({ name: request.params.name }, (err, foundProject) => {
       if (err) {
-        Logger.error(`projects.find ${err.message}`)
-        return reply(Boom.badRequest(err))
+        Logger.error(`projects.find ${err.message}`);
+        return reply(Boom.badRequest(err));
       }
 
       if (foundProject.length < 1) {
-        Logger.error(`projects.find Project ${request.payload.name} not found`)
-        return reply(Boom.badRequest('Project not found.'))
+        Logger.error(`projects.find Project ${request.payload.name} not found`);
+        return reply(Boom.badRequest('Project not found.'));
       }
 
       Version.find({
@@ -45,17 +45,22 @@ exports.create = {
         version: request.payload.version
       }, (err, foundProjectVersion) => {
         if (err) {
-          Logger.error(`versions.find ${err.message}`)
-          return reply(Boom.badRequest(err))
+          Logger.error(`versions.find ${err.message}`);
+          return reply(Boom.badRequest(err));
         }
 
-        if (foundProjectVersion && foundProjectVersion.version === request.payload.version) {
-          Logger.error('versions.find Details for that versions have been entered')
-          return reply(Boom.badRequest('Details for that versions have been entered.'))
+        if (foundProjectVersion &&
+            foundProjectVersion.version === request.payload.version) {
+          Logger.error(
+            'versions.find Details for that versions have been entered'
+          );
+          return reply(Boom.badRequest(
+            'Details for that versions have been entered.'
+          ));
         }
 
-        let payload = request.payload
-        let toCreate = {
+        const payload = request.payload;
+        const toCreate = {
           name: request.params.name,
           version: payload.version,
           loc: payload.loc,
@@ -70,29 +75,29 @@ exports.create = {
             minor: payload.devDependencies ? payload.devDependencies.minor : 0,
             upToDate: payload.devDependencies ? payload.devDependencies.upToDate : 0
           }
-        }
+        };
 
         new Version(toCreate).save((err, newProjectVersion) => {
           if (err) {
-            Logger.error(`versions.create ${err.message}`)
-            return reply(Boom.badRequest(err))
+            Logger.error(`versions.create ${err.message}`);
+            return reply(Boom.badRequest(err));
           }
 
           Project.update(
             { name: newProjectVersion.name },
-            { $push: { versions: newProjectVersion._id } }, (err) => {
+            { $push: { versions: newProjectVersion._id } }, (err) => { // eslint-disable-line no-underscore-dangle
               if (err) {
-                Logger.error(`project.update ${err.message}`)
-                return reply(Boom.badRequest(err))
+                Logger.error(`project.update ${err.message}`);
+                return reply(Boom.badRequest(err));
               }
 
-              reply(newProjectVersion)
-            })
-        })
-      })
-    })
+              reply(newProjectVersion);
+            });
+        });
+      });
+    });
   }
-}
+};
 
 exports.delete = {
   validate: {
@@ -107,19 +112,19 @@ exports.delete = {
       version: request.params.version
     }, (err, foundProject) => {
       if (err) {
-        Logger.error(`versions.destroy ${err.message}`)
-        return reply(Boom.badRequest(err))
+        Logger.error(`versions.destroy ${err.message}`);
+        return reply(Boom.badRequest(err));
       }
 
       if (foundProject.length === 0) {
-        Logger.error('versions.destroy Version not found')
-        return reply(Boom.notFound('Version not found.'))
+        Logger.error('versions.destroy Version not found');
+        return reply(Boom.notFound('Version not found.'));
       }
 
-      reply()
-    })
+      reply();
+    });
   }
-}
+};
 
 exports.get = {
   validate: {
@@ -130,32 +135,32 @@ exports.get = {
   handler: (request, reply) => {
     Version.find({ name: request.params.name }, (err, foundVersions) => {
       if (err) {
-        Logger.error(`versions.findOne ${err.message}`)
-        return reply(Boom.badRequest(err))
+        Logger.error(`versions.findOne ${err.message}`);
+        return reply(Boom.badRequest(err));
       }
 
-      if (foundProject.length < 1) {
-        Logger.error(`versions.findOne No versions entered`)
-        return reply(Boom.notFound('No versions entered.'))
+      if (foundVersions.length < 1) {
+        Logger.error(`versions.findOne No versions entered`);
+        return reply(Boom.notFound('No versions entered.'));
       }
 
-      reply(foundVersions)
-    })
+      reply(foundVersions);
+    });
   }
-}
+};
 
 exports.getAll = {
   handler: (request, reply) => {
     Version.find({}, (err, foundVersions) => {
       if (err) {
-        Logger.error(`versions.find ${err.message}`)
-        return reply(Boom.badRequest(err))
+        Logger.error(`versions.find ${err.message}`);
+        return reply(Boom.badRequest(err));
       }
 
-      reply(foundVersions)
-    })
+      reply(foundVersions);
+    });
   }
-}
+};
 
 exports.getOne = {
   validate: {
@@ -170,19 +175,19 @@ exports.getOne = {
       version: request.params.version
     }, (err, foundVersion) => {
       if (err) {
-        Logger.error(`versions.findOne ${err.message}`)
-        return reply(Boom.badRequest(err))
+        Logger.error(`versions.findOne ${err.message}`);
+        return reply(Boom.badRequest(err));
       }
 
       if (!foundVersion) {
-        Logger.error(`versions.findOne Version not found`)
-        return reply(Boom.notFound('Version not found.'))
+        Logger.error(`versions.findOne Version not found`);
+        return reply(Boom.notFound('Version not found.'));
       }
 
-      reply(foundVersion)
-    })
+      reply(foundVersion);
+    });
   }
-}
+};
 
 exports.update = {
   validate: {
@@ -212,16 +217,16 @@ exports.update = {
       version: request.params.version
     }, request.payload, (err, updatedVersion) => {
       if (err) {
-        Logger.error(`versions.update ${err.message}`)
-        return reply(Boom.badRequest(err))
+        Logger.error(`versions.update ${err.message}`);
+        return reply(Boom.badRequest(err));
       }
 
       if (updatedVersion.length === 0) {
-        Logger.error('versions.update error: Version not found')
-        return reply(Boom.notFound('Version not found.'))
+        Logger.error('versions.update error: Version not found');
+        return reply(Boom.notFound('Version not found.'));
       }
 
-      reply(updatedVersion)
-    })
+      reply(updatedVersion);
+    });
   }
-}
+};
