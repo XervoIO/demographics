@@ -1,9 +1,9 @@
-'use strict'
+'use strict';
 
-const Mongoose = require('mongoose')
-const Timestamps = require('mongoose-timestamp')
+const Mongoose = require('mongoose');
+const Timestamps = require('mongoose-timestamp');
 
-let Version = new Mongoose.Schema({
+const Version = new Mongoose.Schema({
   name: { type: String, required: true, index: true },
   version: { type: String, required: true, index: true },
   loc: { type: Number, required: true },
@@ -18,8 +18,8 @@ let Version = new Mongoose.Schema({
     minor: { type: Number },
     upToDate: { type: Number }
   }
-})
+});
 
-Version.plugin(Timestamps)
+Version.plugin(Timestamps);
 
-module.exports = Mongoose.model('Version', Version)
+module.exports = Mongoose.model('Version', Version);

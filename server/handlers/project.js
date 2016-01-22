@@ -1,10 +1,10 @@
-'use strict'
+'use strict';
 
-const Boom = require('boom')
-const Joi = require('joi')
-const Logger = require('@modulus/Logger')('server/handlers/project')
+const Boom = require('boom');
+const Joi = require('joi');
+const Logger = require('@modulus/Logger')('server/handlers/project');
 
-const Project = require('../models/project')
+const Project = require('../models/project');
 
 exports.create = {
   validate: {
@@ -19,34 +19,36 @@ exports.create = {
   handler: (request, reply) => {
     Project.find({ name: request.payload.name }, (err, foundProject) => {
       if (err) {
-        Logger.error(`projects.find ${err.message}`)
-        return reply(Boom.badRequest(err))
+        Logger.error(`projects.find ${err.message}`);
+        return reply(Boom.badRequest(err));
       }
 
       if (foundProject.length > 0) {
-        Logger.error(`projects.find Project ${request.payload.name} already exists`)
-        return reply(Boom.badRequest('A project by that name already exists.'))
+        Logger.error(
+          `projects.find Project ${request.payload.name} already exists`
+        );
+        return reply(Boom.badRequest('A project by that name already exists.'));
       }
 
-      let toCreate = {
+      const toCreate = {
         name: request.payload.name,
         maintainers: request.payload.maintainers || [],
         description: request.payload.description || '',
         hasLinter: request.payload.hasLinter || false,
         hasReadme: request.payload.hasReadme || false
-      }
+      };
 
       new Project(toCreate).save((err, newProject) => {
         if (err) {
-          Logger.error(`projects.create ${err.message}`)
-          return reply(Boom.badRequest(err))
+          Logger.error(`projects.create ${err.message}`);
+          return reply(Boom.badRequest(err));
         }
 
-        reply(newProject)
-      })
-    })
+        reply(newProject);
+      });
+    });
   }
-}
+};
 
 exports.delete = {
   validate: {
@@ -57,19 +59,19 @@ exports.delete = {
   handler: (request, reply) => {
     Project.remove({ name: request.params.name }, (err, foundProject) => {
       if (err) {
-        Logger.error(`projects.destroy ${err.message}`)
-        return reply(Boom.badRequest(err))
+        Logger.error(`projects.destroy ${err.message}`);
+        return reply(Boom.badRequest(err));
       }
 
       if (foundProject.length === 0) {
-        Logger.error('projects.destroy Project not found')
-        return reply(Boom.notFound('Project not found.'))
+        Logger.error('projects.destroy Project not found');
+        return reply(Boom.notFound('Project not found.'));
       }
 
-      reply()
-    })
+      reply();
+    });
   }
-}
+};
 
 exports.getOne = {
   validate: {
@@ -84,32 +86,34 @@ exports.getOne = {
     .populate('versions')
     .exec((err, foundProject) => {
       if (err) {
-        Logger.error(`projects.findOne ${err.message}`)
-        return reply(Boom.badRequest(err))
+        Logger.error(`projects.findOne ${err.message}`);
+        return reply(Boom.badRequest(err));
       }
 
       if (!foundProject) {
-        Logger.error(`projects.findOne Project ${request.payload.name} not found`)
-        return reply(Boom.badRequest('Project not found.'))
+        Logger.error(
+          `projects.findOne Project ${request.payload.name} not found`
+        );
+        return reply(Boom.badRequest('Project not found.'));
       }
 
-      reply(foundProject)
-    })
+      reply(foundProject);
+    });
   }
-}
+};
 
 exports.getAll = {
   handler: (request, reply) => {
     Project.find({}).populate('versions').exec((err, foundProject) => {
       if (err) {
-        Logger.error(`projects.find ${err.message}`)
-        return reply(Boom.badRequest(err))
+        Logger.error(`projects.find ${err.message}`);
+        return reply(Boom.badRequest(err));
       }
 
-      reply(foundProject)
-    })
+      reply(foundProject);
+    });
   }
-}
+};
 
 exports.update = {
   validate: {
@@ -129,16 +133,16 @@ exports.update = {
       name: request.params.name
     }, request.payload, (err, updatedProject) => {
       if (err) {
-        Logger.error(`projects.findOne ${err.message}`)
-        return reply(Boom.badRequest(err))
+        Logger.error(`projects.findOne ${err.message}`);
+        return reply(Boom.badRequest(err));
       }
 
       if (updatedProject.length < 1) {
-        Logger.error(`projects.find Project ${request.payload.name} not found`)
-        return reply(Boom.badRequest('Project not found.'))
+        Logger.error(`projects.find Project ${request.payload.name} not found`);
+        return reply(Boom.badRequest('Project not found.'));
       }
 
-      reply(updatedProject)
-    })
+      reply(updatedProject);
+    });
   }
-}
+};
