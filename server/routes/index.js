@@ -1,6 +1,6 @@
-const Ping = require('./handlers/ping');
-const Project = require('./handlers/project');
-const Version = require('./handlers/version');
+const Ping = require('../handlers/ping');
+const Project = require('../routes/project');
+const Version = require('../routes/version');
 
 module.exports = [
   { method: 'GET', path: '/ping', handler: Ping },
