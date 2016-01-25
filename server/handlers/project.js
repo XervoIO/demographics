@@ -2,7 +2,7 @@
 
 const Boom = require('boom');
 const Joi = require('joi');
-const Logger = require('@modulus/Logger')('server/handlers/project');
+const Logger = require('@modulus/logger')('server/handlers/project');
 
 const Project = require('../models/project');
 

@@ -2,7 +2,7 @@
 
 const Hapi = require('hapi');
 const Mongoose = require('mongoose');
-const Logger = require('@modulus/Logger')('server');
+const Logger = require('@modulus/logger')('server');
 
 const Config = require('../config');
 const Routes = require('./routes');
