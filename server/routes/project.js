@@ -1,26 +1,26 @@
-const Project = require('../handlers/project');
+const Handler = require('../handlers/project');
 const Validation = require('../validations/project');
 
 exports.create = {
-  handler: Project.create,
+  handler: Handler.create,
   validate: Validation.create
 };
 
 exports.delete = {
-  handler: Project.delete,
+  handler: Handler.delete,
   validate: Validation.delete
 };
 
 exports.getOne = {
-  handler: Project.getOne,
+  handler: Handler.getOne,
   validate: Validation.getOne
 };
 
 exports.getAll = {
-  handler: Project.getAll
+  handler: Handler.getAll
 };
 
 exports.update = {
-  handler: Project.update,
+  handler: Handler.update,
   validate: Validation.update
 };

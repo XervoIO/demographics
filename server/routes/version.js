@@ -1,31 +1,31 @@
-const Version = require('../handlers/version');
+const Handler = require('../handlers/version');
 const Validation = require('../validations/version');
 
 exports.create = {
-  handler: Version.create,
+  handler: Handler.create,
   validate: Validation.create
 };
 
 exports.delete = {
-  handler: Version.delete,
+  handler: Handler.delete,
   validate: Validation.delete
 };
 
 exports.get = {
-  handler: Version.get,
+  handler: Handler.get,
   validate: Validation.get
 };
 
 exports.getOne = {
-  handler: Version.getOne,
+  handler: Handler.getOne,
   validate: Validation.getOne
 };
 
 exports.getAll = {
-  handler: Version.getAll
+  handler: Handler.getAll
 };
 
 exports.update = {
-  handler: Version.update,
+  handler: Handler.update,
   validate: Validation.update
 };
