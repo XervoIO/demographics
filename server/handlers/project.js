@@ -12,8 +12,13 @@ exports.create = {
       name: Joi.string().required(),
       maintainers: Joi.array(),
       description: Joi.string(),
+      hasLicense: Joi.boolean(),
       hasLinter: Joi.boolean(),
-      hasReadme: Joi.boolean()
+      hasReadme: Joi.boolean(),
+      engines: {
+        npm: Joi.string(),
+        node: Joi.string()
+      }
     }
   },
   handler: (request, reply) => {
@@ -30,12 +35,18 @@ exports.create = {
         return reply(Boom.badRequest('A project by that name already exists.'));
       }
 
+      const payload = request.payload;
       const toCreate = {
-        name: request.payload.name,
-        maintainers: request.payload.maintainers || [],
-        description: request.payload.description || '',
-        hasLinter: request.payload.hasLinter || false,
-        hasReadme: request.payload.hasReadme || false
+        name: payload.name,
+        maintainers: payload.maintainers || [],
+        description: payload.description || '',
+        hasLicense: payload.hasLicense || false,
+        hasLinter: payload.hasLinter || false,
+        hasReadme: payload.hasReadme || false,
+        engines: {
+          npm: payload.engines ? payload.engines.npm : '0.0.0',
+          node: payload.engines ? payload.engines.node : '0.0.0'
+        }
       };
 
       new Project(toCreate).save((err, newProject) => {
@@ -124,8 +135,13 @@ exports.update = {
       name: Joi.string(),
       maintainers: Joi.array(),
       description: Joi.string(),
+      hasLicense: Joi.boolean(),
       hasLinter: Joi.boolean(),
-      hasReadme: Joi.boolean()
+      hasReadme: Joi.boolean(),
+      engines: {
+        npm: Joi.string(),
+        node: Joi.string()
+      }
     }
   },
   handler: (request, reply) => {
