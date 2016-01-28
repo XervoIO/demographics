@@ -106,7 +106,13 @@ exports.getOne = function (request, reply) {
 };
 
 exports.getAll = function (request, reply) {
-  Project.find({}).populate('versions').exec((err, foundProject) => {
+  var query = Project.find({});
+
+  query.sort({ name: request.query.sort || 'asc' });
+  query.limit(parseInt(request.query.limit, 10) || 10);
+  query.skip(parseInt(request.query.offset, 10) || 0);
+
+  query.populate('versions').exec((err, foundProject) => {
     if (err) {
       Logger.error(`projects.find ${err.message}`);
       return reply(Boom.badRequest(err));
