@@ -17,6 +17,12 @@ const PAYLOAD = {
   }
 };
 
+const QUERY = {
+  limit: Joi.number(),
+  offset: Joi.number(),
+  sort: Joi.string().allow('asc', 'ascending', 'desc', 'descending')
+};
+
 exports.create = {
   payload: PAYLOAD
 };
@@ -27,6 +33,10 @@ exports.delete = {
 
 exports.getOne = {
   params: PARAMS
+};
+
+exports.getAll = {
+  query: QUERY
 };
 
 exports.update = {
