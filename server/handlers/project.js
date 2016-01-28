@@ -20,12 +20,18 @@ exports.create = function (request, reply) {
       return reply(Boom.badRequest('A project by that name already exists.'));
     }
 
+    const payload = request.payload;
     const toCreate = {
-      name: request.payload.name,
-      maintainers: request.payload.maintainers || [],
-      description: request.payload.description || '',
-      hasLinter: request.payload.hasLinter || false,
-      hasReadme: request.payload.hasReadme || false
+      name: payload.name,
+      maintainers: payload.maintainers || [],
+      description: payload.description || '',
+      hasLicense: payload.hasLicense || false,
+      hasLinter: payload.hasLinter || false,
+      hasReadme: payload.hasReadme || false,
+      engines: {
+        npm: payload.engines ? payload.engines.npm : '0.0.0',
+        node: payload.engines ? payload.engines.node : '0.0.0'
+      }
     };
 
     new Project(toCreate).save((err, newProject) => {
@@ -34,35 +40,7 @@ exports.create = function (request, reply) {
         return reply(Boom.badRequest(err));
       }
 
-      if (foundProject.length > 0) {
-        Logger.error(
-          `projects.find Project ${request.payload.name} already exists`
-        );
-        return reply(Boom.badRequest('A project by that name already exists.'));
-      }
-
-      const payload = request.payload;
-      const toCreate = {
-        name: payload.name,
-        maintainers: payload.maintainers || [],
-        description: payload.description || '',
-        hasLicense: payload.hasLicense || false,
-        hasLinter: payload.hasLinter || false,
-        hasReadme: payload.hasReadme || false,
-        engines: {
-          npm: payload.engines ? payload.engines.npm : '0.0.0',
-          node: payload.engines ? payload.engines.node : '0.0.0'
-        }
-      };
-
-      new Project(toCreate).save((err, newProject) => {
-        if (err) {
-          Logger.error(`projects.create ${err.message}`);
-          return reply(Boom.badRequest(err));
-        }
-
-        reply(newProject);
-      });
+      reply(newProject);
     });
   });
 };
@@ -106,19 +84,20 @@ exports.getOne = function (request, reply) {
 };
 
 exports.getAll = function (request, reply) {
+  const DEFAULT_LIMIT = 10;
   var query = Project.find({});
 
   query.sort({ name: request.query.sort || 'asc' });
-  query.limit(parseInt(request.query.limit, 10) || 10);
+  query.limit(parseInt(request.query.limit, 10) || DEFAULT_LIMIT);
   query.skip(parseInt(request.query.offset, 10) || 0);
 
-  query.populate('versions').exec((err, foundProject) => {
+  query.populate('versions').exec((err, foundProjects) => {
     if (err) {
       Logger.error(`projects.find ${err.message}`);
       return reply(Boom.badRequest(err));
     }
 
-    reply(foundProject);
+    reply(foundProjects);
   });
 };
 
