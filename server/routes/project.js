@@ -17,7 +17,8 @@ exports.getOne = {
 };
 
 exports.getAll = {
-  handler: Handler.getAll
+  handler: Handler.getAll,
+  validate: Validation.getAll
 };
 
 exports.update = {
