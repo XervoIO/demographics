@@ -5,6 +5,9 @@ const Logger = require('@modulus/logger')('server/handlers/project');
 
 const Project = require('../models/project');
 
+const SORT = 'asc';
+const LIMIT = 10;
+const OFFSET = 0;
 
 exports.create = function (request, reply) {
   Project.find({ name: request.payload.name }, (err, foundProject) => {
@@ -84,12 +87,11 @@ exports.getOne = function (request, reply) {
 };
 
 exports.getAll = function (request, reply) {
-  const DEFAULT_LIMIT = 10;
   var query = Project.find({});
 
-  query.sort({ name: request.query.sort || 'asc' });
-  query.limit(parseInt(request.query.limit, 10) || DEFAULT_LIMIT);
-  query.skip(parseInt(request.query.offset, 10) || 0);
+  query.sort({ name: request.query.sort || SORT });
+  query.limit(parseInt(request.query.limit, 10) || LIMIT);
+  query.skip(parseInt(request.query.offset, 10) || OFFSET);
 
   query.populate('versions').exec((err, foundProjects) => {
     if (err) {
